@@ -12,9 +12,8 @@ function GifPlayer(element) {
   const [canvas, setCanvas] = useState(null);
   const [context, setContext] = useState(null);
   const [gif, setGif] = useState(null);
-  const [playing, setPlaying] = useState(Boolean(autoplay));
+  const [playing, setPlaying] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(Number(startFrame));
-
   this.play = () => startPlaying();
   this.pause = () => stopPlaying();
 
@@ -30,11 +29,11 @@ function GifPlayer(element) {
 
   useEffect(() => {
     const canvasElement = element.shadowRoot.querySelector('canvas');
-    if (canvasElement) {
-      setCanvas(canvasElement);
-      setContext(canvasElement.getContext('2d'));
-    }
-  }, [canvas]);
+    setCanvas(canvasElement);
+    setContext(canvasElement.getContext('2d'));
+  }, []);
+
+  useEffect(() => setPlaying(Boolean(autoplay)), [autoplay]);
 
   useEffect(() => {
     if (gif && playing) {
@@ -54,7 +53,7 @@ function GifPlayer(element) {
   }, [currentFrame, gif]);
 
   useEffect(() => {
-    if (src && canvas && context) {
+    if (src) {
       fetch(src)
         .then(res => res.arrayBuffer())
         .then(buffer => new Uint8Array(buffer))
@@ -63,7 +62,7 @@ function GifPlayer(element) {
         .then(data => setGifData(data))
         .catch(err => console.log(err));
       }
-  }, [src, canvas, context]);
+  }, [src]);
 
   return html`
     <style>
