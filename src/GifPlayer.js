@@ -10,7 +10,7 @@ function GifPlayer(element) {
   const [context, setContext] = useState(null);
   const [gif, setGif] = useState(null);
   const [playing, setPlaying] = useState(false);
-  const [currentFrame, setCurrentFrame] = useState(startFrame);
+  const [currentFrame, setCurrentFrame] = useState(Number(startFrame));
 
   function startPlaying() { setPlaying(true) }
   function stopPlaying() { setPlaying(false) }
