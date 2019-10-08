@@ -4,6 +4,9 @@ import { component, useState, useEffect } from 'haunted';
 
 import { processGif } from './util/processGif';
 
+const playEvent = new Event('play');
+const pauseEvent = new Event('pause');
+
 function GifPlayer(element) {
   const {src, autoplay, startFrame = 0} = element;
   const [canvas, setCanvas] = useState(null);
@@ -12,20 +15,10 @@ function GifPlayer(element) {
   const [playing, setPlaying] = useState(Boolean(autoplay));
   const [currentFrame, setCurrentFrame] = useState(Number(startFrame));
 
-  function startPlaying() { setPlaying(true) }
-  function stopPlaying() { setPlaying(false) }
+  this.play = () => startPlaying();
+  this.pause = () => stopPlaying();
 
-  function setGifData(data) {
-    if (currentFrame > data.frames.length - 1) {
-      setCurrentFrame(0);
-    }
-
-    setGif(data);
-    canvas.width = data.width;
-    canvas.height = data.height;
-  }
-
-  useEffect(() => {
+  useEffect(() => { // this should probably be optional
     element.addEventListener('mouseenter', startPlaying);
     element.addEventListener('mouseleave', stopPlaying);
 
@@ -80,6 +73,25 @@ function GifPlayer(element) {
     </style>
     <canvas></canvas>
   `;
+
+  function startPlaying() {
+    setPlaying(true);
+    element.dispatchEvent(playEvent);
+  }
+  function stopPlaying() {
+    setPlaying(false);
+    element.dispatchEvent(pauseEvent);
+  }
+
+  function setGifData(data) {
+    if (currentFrame > data.frames.length - 1) {
+      setCurrentFrame(0);
+    }
+
+    setGif(data);
+    canvas.width = data.width;
+    canvas.height = data.height;
+  }
 }
 
 GifPlayer.observedAttributes = ['src', 'autoplay', 'start-frame'];
