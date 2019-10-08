@@ -5,11 +5,11 @@ import { component, useState, useEffect } from 'haunted';
 import { processGif } from './util/processGif';
 
 function GifPlayer(element) {
-  const {src, startFrame = 0} = element;
+  const {src, autoplay, startFrame = 0} = element;
   const [canvas, setCanvas] = useState(null);
   const [context, setContext] = useState(null);
   const [gif, setGif] = useState(null);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(Boolean(autoplay));
   const [currentFrame, setCurrentFrame] = useState(Number(startFrame));
 
   function startPlaying() { setPlaying(true) }
@@ -82,6 +82,6 @@ function GifPlayer(element) {
   `;
 }
 
-GifPlayer.observedAttributes = ['src', 'start-frame'];
+GifPlayer.observedAttributes = ['src', 'autoplay', 'start-frame'];
 
 customElements.define('gif-player', component(GifPlayer));
