@@ -6,15 +6,24 @@ import { processGif } from './util/processGif';
 
 function GifPlayer(element) {
   const {src, startFrame = 0} = element;
-  console.log(typeof startFrame)
   const [canvas, setCanvas] = useState(null);
   const [context, setContext] = useState(null);
   const [gif, setGif] = useState(null);
   const [playing, setPlaying] = useState(false);
-  const [currentFrame, setCurrentFrame] = useState(0);
+  const [currentFrame, setCurrentFrame] = useState(startFrame);
 
   function startPlaying() { setPlaying(true) }
   function stopPlaying() { setPlaying(false) }
+
+  function setGifData(data) {
+    if (currentFrame > data.frames.length - 1) {
+      setCurrentFrame(0);
+    }
+
+    setGif(data);
+    canvas.width = data.width;
+    canvas.height = data.height;
+  }
 
   useEffect(() => {
     element.addEventListener('mouseenter', startPlaying);
@@ -27,7 +36,15 @@ function GifPlayer(element) {
   });
 
   useEffect(() => {
-    if (gif) {
+    const canvas = element.shadowRoot.querySelector('canvas');
+    if (canvas) {
+      setCanvas(canvas);
+      setContext(canvas.getContext('2d'));
+    }
+  }, [canvas]);
+
+  useEffect(() => {
+    if (gif && playing) {
       const timeout = setTimeout(() => {
         const frameToPlay = currentFrame < gif.frames.length - 1 ? currentFrame + 1 : 0;
         setCurrentFrame(frameToPlay)
@@ -38,36 +55,22 @@ function GifPlayer(element) {
   });
 
   useEffect(() => {
-    if (canvas && context && gif) {
-      canvas.width = gif.width;
-      canvas.height = gif.height;
-    }
-  }, [canvas, context, gif]);
-
-  useEffect(() => {
-    if (context && gif && currentFrame) {
+    if (gif) {
       context.putImageData(gif.frames[currentFrame].data, 0, 0);
     }
-  }, [currentFrame]);
+  }, [currentFrame, gif]);
 
   useEffect(() => {
-    const canvas = element.shadowRoot.querySelector('canvas');
-
-    if (canvas) {
-      setCanvas(canvas);
-      setContext(canvas.getContext('2d'));
-    }
-
-    if (src) {
+    if (src && canvas && context) {
       fetch(src)
         .then(res => res.arrayBuffer())
         .then(buffer => new Uint8Array(buffer))
         .then(buffer => new GifReader(buffer))
         .then(gif => processGif(gif))
-        .then(data => setGif(data))
+        .then(data => setGifData(data))
         .catch(err => console.log(err));
       }
-  }, [src]);
+  }, [src, canvas, context]);
 
   return html`
     <style>
