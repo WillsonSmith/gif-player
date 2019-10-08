@@ -5,8 +5,7 @@
   "module": "dist/index.es.js",
   "license": "MIT",
   "scripts": {
-    "serve": "parcel index.html",
-    "start": "parcel src/GifPlayer.js dist/GifPlayer.js",
+    "serve": "parcel index.html --out-dir serve",
     "build": "parcel build src/GifPlayer.js dist/GifPlayer.js"
   },
   "dependencies": {

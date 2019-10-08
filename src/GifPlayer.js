@@ -36,10 +36,10 @@ function GifPlayer(element) {
   });
 
   useEffect(() => {
-    const canvas = element.shadowRoot.querySelector('canvas');
-    if (canvas) {
-      setCanvas(canvas);
-      setContext(canvas.getContext('2d'));
+    const canvasElement = element.shadowRoot.querySelector('canvas');
+    if (canvasElement) {
+      setCanvas(canvasElement);
+      setContext(canvasElement.getContext('2d'));
     }
   }, [canvas]);
 
